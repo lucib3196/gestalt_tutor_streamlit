@@ -69,7 +69,7 @@ def render_selected_source():
     active_source = source_index.get(active_key, None)
     if active_source:
         pdf_path = (
-            Path("gestalt_streamlit_template") / active_source.source_pdf
+            Path() / active_source.source_pdf
         ).resolve()
         rotated_bytes = rotate_pdf(pdf_path, st.session_state["source_rotation"])
         st.pdf(rotated_bytes)
