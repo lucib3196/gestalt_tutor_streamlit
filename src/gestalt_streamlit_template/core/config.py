@@ -9,7 +9,7 @@ class ALLOWED_MODE(str, Enum):
     BOTH = "both"
 
 
-CHAT_NAMES = Literal["mychat"]
+CHAT_NAMES = Literal["ME135 Transport Tutor"]
 
 
 class ChatOption(BaseModel):
@@ -24,10 +24,14 @@ class ChatOption(BaseModel):
 
 
 CHAT_OPTIONS: Dict[CHAT_NAMES, ChatOption] = {
-    "mychat": ChatOption(
-        label="My Chat",
+    "ME135 Transport Tutor": ChatOption(
+        label="ME135 Transport Phenomena Tutor",
         chat_id="agent",
-        description="A simple chatbot",
+        description=(
+            "An in-depth Transport Phenomena tutor grounded in Professor Sundar’s ME135 lecture notes. "
+            "Provides concept explanations, derivations, and problem-solving guidance for momentum, heat, "
+            "and mass transfer topics, with references to the original lecture material."
+        ),
         mode=ALLOWED_MODE.TEXT,
     )
 }
