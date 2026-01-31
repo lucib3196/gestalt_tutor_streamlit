@@ -5,6 +5,8 @@ import streamlit as st
 from models import SourceRef
 from typing import List
 
+PKG_ROOT = Path(__file__).resolve().parents[1]
+
 
 def rotate_pdf(pdf_path: Path | str, rotation: int) -> bytes:
     doc = fitz.open(pdf_path)
@@ -69,7 +71,7 @@ def render_selected_source():
     active_source = source_index.get(active_key, None)
     if active_source:
         pdf_path = (
-            Path() / active_source.source_pdf
+            PKG_ROOT / active_source.source_pdf
         ).resolve()
         rotated_bytes = rotate_pdf(pdf_path, st.session_state["source_rotation"])
         st.pdf(rotated_bytes)
