@@ -9,7 +9,7 @@ class ALLOWED_MODE(str, Enum):
     BOTH = "both"
 
 
-CHAT_NAMES = Literal["ME135 Transport Tutor", "ME118 Engineering Modeling and Analysis Tutor"]
+CHAT_NAMES = Literal["ME135 Transport Tutor", "ME118 Engineering Modeling and Analysis Tutor","Sundar Tutor"]
 
 
 class ChatOption(BaseModel):
@@ -44,5 +44,17 @@ CHAT_OPTIONS: Dict[CHAT_NAMES, ChatOption] = {
         "engineering interpretation of mathematical models, with references to the original lecture material."
     ),
         mode=ALLOWED_MODE.TEXT,
-    )
+    ),
+    "Sundar Tutor": ChatOption(
+        label="Sundar Tutor",
+        chat_id="sundar_agent",
+        description=(
+            "A unified upper-division Mechanical Engineering tutor covering both ME118 (Engineering Modeling and Analysis) "
+            "and ME135 (Transport Phenomena), grounded exclusively in Professor Sundar’s lecture notes. "
+            "Automatically retrieves from the appropriate course materials and provides concept explanations, "
+            "step-by-step derivations, modeling guidance, and structured problem-solving support with explicit "
+            "lecture references."
+        ),
+        mode=ALLOWED_MODE.TEXT,
+    ),
 }
