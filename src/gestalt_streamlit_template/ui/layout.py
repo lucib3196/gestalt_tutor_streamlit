@@ -1,6 +1,6 @@
 import streamlit as st
 from core import ENV, ChatOption, CHAT_OPTIONS
-
+from services.llm_services import get_new_thread_id
 
 def render_title(
     title: str = "My Chat", env: ENV = ENV.LOCAL, thread_id: str | None = None
@@ -50,3 +50,4 @@ def handle_chatbot_change():
         return
     chat_data = CHAT_OPTIONS[selected]
     st.session_state.chat_data = chat_data
+    get_new_thread_id()

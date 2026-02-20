@@ -7,26 +7,56 @@ from typing import Any, Dict
 from models import SourceRef
 
 
-def extract_sources(source_data: Dict[str, Any]):
+def extract_sources(source_data: Dict[str, Any]) -> None:
     if not source_data:
         return
+
+    source_list = source_data.get("messages")
+    if not isinstance(source_list, list) or not source_list:
+        return
+
+    last_message = source_list[-1]
+
+    # Ensure last_message is dict-like
+    if not isinstance(last_message, dict):
+        return
+
+    artifact = last_message.get("artifact")
+    if not artifact:
+        return
+
+    # Artifact can be dict or list depending on LangGraph config
+    if isinstance(artifact, dict):
+        artifact_list = list(artifact.values())
+    elif isinstance(artifact, list):
+        artifact_list = artifact
+    else:
+        return
+
     sources: list[SourceRef] = []
-    source_list = source_data.get("messages", [])
-    for doc in source_list[-1].get("artifact", []):
+
+    for doc in artifact_list:
+        if not isinstance(doc, dict):
+            continue
+
         metadata = doc.get("metadata", {})
+        if not isinstance(metadata, dict):
+            continue
+
         path = metadata.get("source_pdf")
         if not path:
             continue
+
         sources.append(
             SourceRef(
                 lecture_title=metadata.get("lecture_title", "Untitled Source"),
-                lecture_summary=metadata.get("lecture_summary", None),
+                lecture_summary=metadata.get("lecture_summary"),
                 source_pdf=Path(path),
                 page=None,
             )
         )
-    st.session_state.sources = sources
 
+    st.session_state.sources = sources
 
 async def get_thread_id():
     return await client.threads.create()
@@ -36,6 +66,11 @@ def initialize_thread_id() -> str:
     if "thread_id" not in st.session_state:
         thread = run_async(get_thread_id())
         st.session_state.thread_id = thread["thread_id"]
+    return st.session_state.thread_id
+
+def get_new_thread_id()->str:
+    thread = run_async(get_thread_id())
+    st.session_state.thread_id = thread["thread_id"]
     return st.session_state.thread_id
 
 
