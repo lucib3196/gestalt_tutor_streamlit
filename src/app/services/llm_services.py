@@ -34,28 +34,24 @@ def extract_sources(source_data: Dict[str, Any]) -> None:
         return
 
     sources: list[SourceRef] = []
+    try:
 
-    for doc in artifact_list:
-        if not isinstance(doc, dict):
-            continue
-
-        metadata = doc.get("metadata", {})
-        if not isinstance(metadata, dict):
-            continue
-
-        path = metadata.get("source_pdf")
-        if not path:
-            continue
-
-        sources.append(
-            SourceRef(
-                lecture_title=metadata.get("lecture_title", "Untitled Source"),
-                lecture_summary=metadata.get("lecture_summary"),
-                source_pdf=Path(path),
-                page=None,
+        source_list = source_data.get("messages", [])
+        for doc in source_list[-1].get("artifact", []):
+            metadata = doc.get("metadata", {})
+            path = metadata.get("source_pdf")
+            if not path:
+                continue
+            sources.append(
+                SourceRef(
+                    lecture_title=metadata.get("lecture_title", "Untitled Source"),
+                    lecture_summary=metadata.get("lecture_summary", None),
+                    source_pdf=Path(path),
+                    page=None,
+                )
             )
-        )
-
+    except Exception as e:
+        return
     st.session_state.sources = sources
 
 async def get_thread_id():
