@@ -5,16 +5,6 @@
 
 A streamlit frontend for tutors focused on mechanical engineering 
 
----
-
-## LangGraph Local Server Integration
-
-This template is designed to work with the LangGraph local development server, allowing you to run and iterate on LangGraph agents alongside the Streamlit UI.
-
-For detailed guidance on developing and running the LangGraph server, refer to the official LangGraph local server documentation:
-[https://docs.langchain.com/oss/python/langgraph/local-server](https://docs.langchain.com/oss/python/langgraph/local-server)
-
----
 
 ## Agent / Chat Configuration
 
@@ -114,4 +104,5 @@ streamlit run gestalt_streamlit_template/main.py
 ```
 
 The application will open automatically in your browser.
+
 
