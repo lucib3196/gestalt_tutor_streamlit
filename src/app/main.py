@@ -10,8 +10,8 @@ from ui import (
 from ui.login import render_signup, render_login
 import streamlit as st
 
-
 init_session()
+
 
 def render_chat_page():
     render_select_box()
@@ -20,7 +20,8 @@ def render_chat_page():
     render_chat_input()
     if st.session_state.get("show_sources"):
         source_view()
-    
+
+
 def render_auth():
     mode = st.radio("Choose", ["Login", "Sign Up"], horizontal=True)
     st.title(mode)
@@ -29,7 +30,7 @@ def render_auth():
         render_login()
     else:
         render_signup()
-    
+
 
 def render_ui():
     # Header Section
@@ -42,7 +43,6 @@ def render_ui():
         render_auth()
     else:
         render_chat_page()
-
 
 
 render_ui()
