@@ -1,9 +1,9 @@
 
 ---
 
-# Gestalt Streamlit Template
+# Gestalt Tutor Streamlit Template
 
-A reusable Streamlit project template designed for AI-powered applications.
+A streamlit frontend for tutors focused on mechanical engineering 
 
 ---
 
@@ -53,7 +53,7 @@ Before installing, ensure the following are installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/lucib3196/gestalt_streamlit_template.git
+git clone [https://github.com/lucib3196/gestalt_streamlit_template.git](https://github.com/lucib3196/gestalt_tutor_streamlit.git)
 cd gestalt_streamlit_template
 ```
 
@@ -114,3 +114,4 @@ streamlit run gestalt_streamlit_template/main.py
 ```
 
 The application will open automatically in your browser.
+
