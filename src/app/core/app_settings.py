@@ -1,9 +1,8 @@
 from functools import lru_cache
 from enum import Enum
-from typing import Literal
-
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field
+from typing import Optional
+from pydantic import BaseModel, Field, model_validator
+import streamlit as st
 
 
 class ENV(str, Enum):
@@ -11,45 +10,103 @@ class ENV(str, Enum):
     PRODUCTION = "production"
 
 
-class AppSettings(BaseSettings):
-    # -------------------------------------------------
-    # App
-    # -------------------------------------------------
-    name: str = "gestalt_streamlit_template"
-
-    # -------------------------------------------------
-    # Environment
-    # -------------------------------------------------
-    environment: ENV = ENV.LOCAL
-
-    # -------------------------------------------------
-    # LLM Server
-    # -------------------------------------------------
-    local_url: str = "http://127.0.0.1:2024"
-    production_url: str = ""
-
-    # -------------------------------------------------
-    # Secrets
-    # -------------------------------------------------
-    langsmith_api_key: str | None = None
-
-    # -------------------------------------------------
-    # Derived
-    # -------------------------------------------------
-    @property
-    def url(self) -> str:
-        return self.local_url if self.environment == ENV.LOCAL else self.production_url
-
-    # -------------------------------------------------
-    # Pydantic config
-    # -------------------------------------------------
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=False,
-        extra="ignore",
+class AppSettings(BaseModel):
+    name: str = Field(
+        default="gestalt_tutor",
+        description="Application name used for display and logging purposes.",
     )
 
+    # ------------------------
+    # AI / Agent Configuration
+    # ------------------------
+    agent_local_url: Optional[str] = Field(
+        default="http://127.0.0.1:2024",
+        description="Local LangGraph agent server URL used during development.",
+        examples=["http://127.0.0.1:2024"],
+    )
+
+    agent_production_url: Optional[str] = Field(
+        default=None,
+        description="Production LangGraph agent URL. Required when agent_env is PRODUCTION.",
+    )
+
+    agent_env: ENV = Field(
+        default=ENV.LOCAL,
+        description="Environment for the agent server (local or production).",
+    )
+
+    langsmith_api_key: Optional[str] = Field(
+        default=None,
+        description="LangSmith API key used for tracing and observability.",
+        repr=False,  # prevents accidental printing
+    )
+
+    # ------------------------
+    # Backend API Configuration
+    # ------------------------
+    production_url: Optional[str] = Field(
+        default="",
+        description="Production FastAPI backend URL.",
+        examples=["https://api.gestalttutor.com"],
+    )
+
+    local_url: Optional[str] = Field(
+        default="http://localhost:8010",
+        description="Local FastAPI backend URL used during development.",
+        examples=["http://localhost:8010"],
+    )
+
+    env: ENV = Field(
+        default=ENV.LOCAL,
+        description="Application runtime environment (local or production).",
+    )
+
+    # ------------------------
+    # UI / Feature Flags
+    # ------------------------
+    show_sources: bool = Field(
+        default=True,
+        description="Flag to control whether source documents are displayed in the UI.",
+    )
+
+    # Derived properties
+    @model_validator(mode="after")
+    def validate_agent_env(
+        self,
+    ):
+        if self.agent_env == ENV.LOCAL and not self.agent_local_url:
+            raise ValueError("AGENT ENV  set to local but url is not set")
+        if self.agent_env == ENV.PRODUCTION and not self.agent_production_url:
+            raise ValueError("AGENT ENV set to production but not production url")
+        return self
+
+    @model_validator(mode="after")
+    def validate_backend_env(
+        self,
+    ):
+        if self.env == ENV.LOCAL and not self.local_url:
+            raise ValueError("AGENT ENV  set to local but url is not set")
+        if self.env == ENV.PRODUCTION and not self.production_url:
+            raise ValueError("AGENT ENV set to production but not production url")
+        return self
+    
+    @property
+    def get_agent_url(self):
+        if self.agent_env == ENV.LOCAL:
+            return self.agent_local_url
+        elif self.agent_env == ENV.PRODUCTION:
+            return self.agent_production_url
+        else:
+            raise ValueError(f"Failed to determined agent url. Unknown mode :{self.agent_env} ")
+
+    @property
+    def get_backend_url(self):
+        if self.env.value == "local":
+            return self.local_url
+        elif self.env.value == "production":
+            return self.production_url
+        else:
+            raise ValueError(f"Failed to determine the backend url: Unknown mode {self.env.value}")
 
 @lru_cache
 def get_settings() -> AppSettings:
@@ -57,4 +114,12 @@ def get_settings() -> AppSettings:
     Cached settings instance.
     Safe for Streamlit, FastAPI, CLI.
     """
-    return AppSettings()
+    raw_settings = dict(**st.secrets)
+    norm_settings = {}
+    for key, value in raw_settings.items():
+        norm_settings[key.lower()] = value
+    return AppSettings(**norm_settings)
+
+
+if __name__ == "__main__":
+    print("Settings: ", get_settings())

@@ -1,11 +1,16 @@
 from typing import Any, List
-from pydantic import BaseModel
-import streamlit as st
-from .config import CHAT_NAMES
-from app.services.llm_services import initialize_thread_id
-from . import SourceRef, User
 
-show_sources = st.secrets.get("SHOW_SOURCES", False)
+import streamlit as st
+from pydantic import BaseModel
+
+from app.services.llm_services import initialize_thread_id
+
+from . import SourceRef, User
+from .app_settings import get_settings
+from .chat_config import CHAT_NAMES
+
+settings = get_settings()
+show_sources = settings.show_sources
 
 
 class DefaultState(BaseModel):
