@@ -1,10 +1,10 @@
 import streamlit as st
-from core import client
+from app.core.client import client
 from .async_wrappers import run_async
-
+from app.models.sources import SourceRef
 from pathlib import Path
 from typing import Any, Dict
-from models import SourceRef
+
 
 
 def extract_sources(source_data: Dict[str, Any]) -> None:

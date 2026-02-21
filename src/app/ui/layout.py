@@ -1,6 +1,7 @@
 import streamlit as st
-from core import ENV, ChatOption, CHAT_OPTIONS
-from services.llm_services import get_new_thread_id
+from app.core.chat_config import  ChatOption, CHAT_OPTIONS
+from app.core.app_settings import ENV
+from app.services.llm_services import get_new_thread_id
 
 def render_title(
     title: str = "My Chat", env: ENV = ENV.LOCAL, thread_id: str | None = None
@@ -14,40 +15,5 @@ def render_title(
     st.title(title)
 
 
-def render_select_box() -> str | None:
-    # Renders the labele for the option
-    options = [k for k, v in CHAT_OPTIONS.items() if v.active]
-
-    add_radio = st.selectbox(
-        label="Choose Chat Mode",
-        options=options,
-        index=None,
-        key="chat_select",
-        format_func=lambda k: CHAT_OPTIONS[k].label,
-        on_change=handle_chatbot_change,
-    )
-
-    return add_radio
 
 
-def render_chatbot_description():
-    if "chat_data" in st.session_state:
-        chat_data: ChatOption = st.session_state.chat_data
-        st.subheader(chat_data.label)
-        st.write(chat_data.description)
-
-        # TODO: Fix this
-        if chat_data.mode == "file":
-            uploaded_file = st.file_uploader("Choose a file")
-            if uploaded_file is not None:
-                bytes_data = uploaded_file.getvalue()
-                st.write(bytes_data)
-
-
-def handle_chatbot_change():
-    selected = st.session_state.chat_select
-    if not selected:
-        return
-    chat_data = CHAT_OPTIONS[selected]
-    st.session_state.chat_data = chat_data
-    get_new_thread_id()

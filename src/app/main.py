@@ -1,15 +1,17 @@
-from core import init_session
-from ui import (
-    render_title,
-    render_select_box,
-    render_chatbot_description,
+import streamlit as st
+from app.core.app_settings import get_settings
+from app.core.session import init_session
+from app.ui.layout import render_title
+from app.ui.chat import (
     render_chat,
     render_chat_input,
-    source_view,
+    render_select_box,
+    render_chatbot_description,
 )
-from ui.login import render_signup, render_login
-import streamlit as st
+from app.ui.sources import source_view
+from app.ui.login import render_login, render_signup
 
+settings = get_settings()
 init_session()
 
 
@@ -35,8 +37,8 @@ def render_auth():
 def render_ui():
     # Header Section
     render_title(
-        title=st.secrets["NAME"],
-        env=st.secrets["ENV"],
+        title=settings.name,
+        env=settings.env,
         thread_id=st.session_state.thread_id,
     )
     if not st.session_state.id_token:
