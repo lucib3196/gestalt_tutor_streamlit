@@ -21,7 +21,7 @@ For detailed guidance on developing and running the LangGraph server, refer to t
 For this template to function correctly, available chats (agents) must be configured in:
 
 ```
-src/core/config
+src/core/chat_config
 ```
 
 This configuration defines:
@@ -94,15 +94,22 @@ Do not commit `secrets.toml`; it should remain local only.
 Example configuration:
 
 ```bash
-LOCAL_URL="http://127.0.0.1:2024"  # LangGraph local server default
-PRODUCTION_URL="http://127.0.0.1:8000"  # Update for production deployments
-ENV="local"  # Either "local" or "production"
-NAME="MyProject"
+## Agent settings
+AGENT_PRODUCTION_URL=""
+AGENT_LOCAL_URL = "http://127.0.0.1:2024"
+AGENT_ENV= "local"
 
-LANGSMITH_TRACING="true"
-LANGSMITH_ENDPOINT="https://api.smith.langchain.com"
+## API Key
+### APIKEY Needed for agent production
 LANGSMITH_API_KEY=""
-LANGSMITH_PROJECT="MyLangsmithProject"
+
+## Backend settings 
+PRODUCTION_URL= ""
+LOCAL_URL = "http://localhost:8010"
+MODE="local"
+
+# Other general settings
+SHOW_SOURCES= true
 ```
 
 ---
@@ -110,7 +117,8 @@ LANGSMITH_PROJECT="MyLangsmithProject"
 ## Running the Application
 
 ```bash
-streamlit run gestalt_streamlit_template/main.py
+cd src
+streamlit run app/main.py
 ```
 
 The application will open automatically in your browser.
