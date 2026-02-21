@@ -2,7 +2,7 @@ from pathlib import Path
 import fitz
 from io import BytesIO
 import streamlit as st
-from models import SourceRef
+from app.models.sources import SourceRef
 from typing import List
 
 PKG_ROOT = Path(__file__).resolve().parents[1]
@@ -70,9 +70,7 @@ def render_selected_source():
     active_key = st.session_state.get("active_source")
     active_source = source_index.get(active_key, None)
     if active_source:
-        pdf_path = (
-            PKG_ROOT / active_source.source_pdf
-        ).resolve()
+        pdf_path = (PKG_ROOT / active_source.source_pdf).resolve()
         rotated_bytes = rotate_pdf(pdf_path, st.session_state["source_rotation"])
         st.pdf(rotated_bytes)
 
