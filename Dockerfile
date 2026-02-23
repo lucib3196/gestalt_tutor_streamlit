@@ -58,7 +58,6 @@ HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
 
 WORKDIR /root
 
-ENV PYTHONPATH=/app/src
 
 # Run the application.
 ENTRYPOINT ["python", "-m", "streamlit", "run", "src/app/main.py", "--server.port=8501", "--server.address=0.0.0.0"]
