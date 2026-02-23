@@ -1,6 +1,6 @@
 import streamlit as st
-from app.models.user import UserCreate
-from app.services.auth import sign_up, login
+from models.user import UserCreate
+from services.auth import sign_up, login
 
 
 def render_signup():

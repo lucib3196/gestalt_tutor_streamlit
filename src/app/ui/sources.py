@@ -2,7 +2,7 @@ from pathlib import Path
 import fitz
 from io import BytesIO
 import streamlit as st
-from app.models.sources import SourceRef
+from models.sources import SourceRef
 from typing import List
 
 PKG_ROOT = Path(__file__).resolve().parents[1]

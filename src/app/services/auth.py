@@ -1,9 +1,7 @@
 import streamlit as st
-from app.core.session import User
 import httpx
 import requests
-from pydantic import BaseModel
-from app.models.user import UserCreate
+from models.user import UserCreate
 
 
 def sign_up(data: UserCreate):
