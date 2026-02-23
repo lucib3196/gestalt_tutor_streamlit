@@ -1,3 +1,3 @@
 
-from app.models.sources import SourceRef
-from app.models.user import User
+from models.sources import SourceRef
+from models.user import User
