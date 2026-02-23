@@ -1,15 +1,18 @@
 import streamlit as st
 import httpx
 import requests
-from models.user import UserCreate
+from app.models.user import UserCreate
+from app.core.app_settings import get_settings
+
+
+settings = get_settings()
+BACKEND_URL = settings.get_backend_url
 
 
 def sign_up(data: UserCreate):
     try:
         with httpx.Client() as client:
-            response = client.post(
-                "http://localhost:8010/users/", json=data.model_dump()
-            )
+            response = client.post(f"{BACKEND_URL}/users/", json=data.model_dump())
         return response
     except Exception as e:
         raise ValueError(f"Failed to make request to backend {e}")
@@ -42,7 +45,7 @@ def login(email: str, password: str):
     try:
         with httpx.Client() as client:
             fastapi_response = client.post(
-                "http://localhost:8010/users/login", json={"id_token": id_token}
+                f"{BACKEND_URL}/users/login", json={"id_token": id_token}
             )
         print("Login Response", fastapi_response)
         if fastapi_response.status_code == 200:
