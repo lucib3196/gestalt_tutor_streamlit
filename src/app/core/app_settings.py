@@ -1,9 +1,10 @@
 from functools import lru_cache
 from enum import Enum
 from typing import Optional
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator,ConfigDict
 import streamlit as st
 from pydantic_settings import BaseSettings
+
 
 
 class ENV(str, Enum):
@@ -69,6 +70,9 @@ class AppSettings(BaseSettings):
         default=True,
         description="Flag to control whether source documents are displayed in the UI.",
     )
+    
+    class Config:
+        extra = "ignore"
 
     # Derived properties
     @model_validator(mode="after")
@@ -122,14 +126,27 @@ def get_settings() -> AppSettings:
     """
     # Check streamlit secrets first
     try:
-        norm_settings = {}
-        if hasattr(st, "secrets") and st.secrets:
-            raw_settings = dict(**st.secrets)
-            for key, value in raw_settings.items():
-                norm_settings[key.lower()] = value
-                return AppSettings(**raw_settings)
-    except Exception:
-        pass
+        print("Trying to load Streamlit secrets")
+
+        raw_settings = {}
+
+        # Only attempt if running inside streamlit context
+        if hasattr(st, "secrets"):
+            raw_settings = dict(st.secrets)
+
+        if raw_settings:
+            print("Using Streamlit secrets")
+
+            norm_settings = {
+                key.lower(): value
+                for key, value in raw_settings.items()
+                if value is not None
+            }
+
+            return AppSettings(**norm_settings)
+
+    except Exception as e:
+        print(f"Failed loading secrets: {e}")
 
     return AppSettings()
 
