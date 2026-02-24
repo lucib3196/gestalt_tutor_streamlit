@@ -15,8 +15,6 @@ def sign_up(data: UserCreate):
             response = client.post(f"{BACKEND_URL}/users/", json=data.model_dump())
 
         print("Response body", response.json())
-
-        response.raise_for_status()
         return response
     except Exception as e:
         raise ValueError(
