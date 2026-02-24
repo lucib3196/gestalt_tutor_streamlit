@@ -15,7 +15,7 @@ def sign_up(data: UserCreate):
             response = client.post(f"{BACKEND_URL}/users/", json=data.model_dump())
         return response
     except Exception as e:
-        raise ValueError(f"Failed to make request to backend {e}")
+        raise ValueError(f"Failed to make request to backend {e}. Sanity Check {BACKEND_URL}")
 
 
 def login(email: str, password: str):
