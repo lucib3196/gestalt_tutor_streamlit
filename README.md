@@ -69,7 +69,17 @@ This installs all required Python dependencies defined in `pyproject.toml`.
 
 ### Streamlit Secrets
 
-This project uses Streamlit’s secrets system for configuration, including API keys and environment settings.
+You can configure the application either using:
+
+- A .streamlit/secrets.toml file (recommended for Streamlit apps), or
+- A .env file (recommended for Docker / backend deployments)
+
+An example environment configuration is provided in:
+
+```bash
+.env.example
+.streamlit/secrets.toml
+```
 
 1. Navigate to the `src/.streamlit/` directory
 2. Copy the example secrets file:
@@ -101,6 +111,12 @@ MODE="local"
 # Other general settings
 SHOW_SOURCES= true
 ```
+### Notes
+
+- ENV and AGENT_ENV should be either LOCAL or PRODUCTION.
+- Leave production URLs empty during local development. (Exept for agent)
+- SHOW_SOURCES controls whether source documents are displayed in the UI.
+- API keys are only required for production deployments.
 
 ---
 
