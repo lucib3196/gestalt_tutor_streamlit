@@ -12,7 +12,7 @@ BACKEND_URL = settings.get_backend_url
 def sign_up(data: UserCreate):
     try:
         with httpx.Client() as client:
-            response = client.post(f"{BACKEND_URL}/users", json=data.model_dump())
+            response = client.post(f"{BACKEND_URL}/users/", json=data.model_dump())
 
         print("Response body", response.json())
 
