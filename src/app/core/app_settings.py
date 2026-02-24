@@ -1,16 +1,18 @@
 from functools import lru_cache
+from pathlib import Path
 from enum import Enum
 from typing import Optional
-from pydantic import BaseModel, Field, model_validator,ConfigDict
+
 import streamlit as st
-from pydantic_settings import BaseSettings
 
-
+from pydantic import Field, model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class ENV(str, Enum):
     LOCAL = "local"
     PRODUCTION = "production"
 
+ROOT_DIR = Path(__file__).resolve().parents[3]
 
 class AppSettings(BaseSettings):
     name: str = Field(
@@ -71,8 +73,12 @@ class AppSettings(BaseSettings):
         description="Flag to control whether source documents are displayed in the UI.",
     )
     
-    class Config:
-        extra = "ignore"
+    model_config = SettingsConfigDict(
+        env_file=ROOT_DIR / ".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        case_sensitive=False,
+    )
 
     # Derived properties
     @model_validator(mode="after")
@@ -147,7 +153,7 @@ def get_settings() -> AppSettings:
 
     except Exception as e:
         print(f"Failed loading secrets: {e}")
-
+    print("Using default env")
     return AppSettings()
 
 
