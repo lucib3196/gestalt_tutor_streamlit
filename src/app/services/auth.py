@@ -25,12 +25,14 @@ def login(email: str, password: str):
     # Use google endpoint
     ## Todo change thsi to the auth 
     # url = "http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=fake-key"
-    url = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword"
+    url = settings.get_firebase_url
     payload = {"email": email, "password": password, "returnSecureToken": True}
-
+    
     try:
         response = requests.post(url, json=payload)
         body = dict(response.json())
+        
+        print("This is the google response", body)
 
         if response.status_code != 200:
             error_msg = body.get("error", {}).get("message", "Unknown error")

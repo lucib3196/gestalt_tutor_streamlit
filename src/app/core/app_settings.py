@@ -8,11 +8,14 @@ import streamlit as st
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+
 class ENV(str, Enum):
     LOCAL = "local"
     PRODUCTION = "production"
 
+
 ROOT_DIR = Path(__file__).resolve().parents[3]
+
 
 class AppSettings(BaseSettings):
     name: str = Field(
@@ -64,7 +67,10 @@ class AppSettings(BaseSettings):
         default=ENV.LOCAL,
         description="Application runtime environment (local or production).",
     )
-
+    # ------------------------
+    # FIREBASE API Configuration
+    # ------------------------
+    firebase_api_key: str | None = None
     # ------------------------
     # UI / Feature Flags
     # ------------------------
@@ -72,7 +78,7 @@ class AppSettings(BaseSettings):
         default=True,
         description="Flag to control whether source documents are displayed in the UI.",
     )
-    
+
     model_config = SettingsConfigDict(
         env_file=ROOT_DIR / ".env",
         env_file_encoding="utf-8",
@@ -123,6 +129,20 @@ class AppSettings(BaseSettings):
                 f"Failed to determine the backend url: Unknown mode {self.env.value}"
             )
 
+    @property
+    def get_firebase_url(self)->str:
+        if self.env.value == "local":
+            # Firebase host emulator
+            return "http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=fake-key"
+        elif self.env.value == "production":
+            if not self.firebase_api_key:
+                raise ValueError(
+                    "Failed to define firebase url firebase api key is None. Must be set in ENV"
+                )
+            url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={self.firebase_api_key}"
+            return url
+        else:
+            raise ValueError("Cannot determine firebase url")
 
 @lru_cache
 def get_settings() -> AppSettings:
