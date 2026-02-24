@@ -14,7 +14,6 @@ def sign_up(data: UserCreate):
         with httpx.Client() as client:
             response = client.post(f"{BACKEND_URL}/users/", json=data.model_dump())
 
-        print("Response body", response.json())
         return response
     except Exception as e:
         raise ValueError(
@@ -24,7 +23,9 @@ def sign_up(data: UserCreate):
 
 def login(email: str, password: str):
     # Use google endpoint
-    url = "http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=fake-key"
+    ## Todo change thsi to the auth 
+    # url = "http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=fake-key"
+    url = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword"
     payload = {"email": email, "password": password, "returnSecureToken": True}
 
     try:
