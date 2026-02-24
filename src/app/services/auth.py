@@ -13,6 +13,7 @@ def sign_up(data: UserCreate):
     try:
         with httpx.Client() as client:
             response = client.post(f"{BACKEND_URL}/users/", json=data.model_dump())
+            print("Response" ,response)
         return response
     except Exception as e:
         raise ValueError(f"Failed to make request to backend {e}. Sanity Check {BACKEND_URL}")
