@@ -2,7 +2,7 @@ from functools import lru_cache
 from pathlib import Path
 from enum import Enum
 from typing import Optional
-
+import os
 import streamlit as st
 
 from pydantic import Field, model_validator
@@ -154,6 +154,7 @@ def get_settings() -> AppSettings:
     except Exception as e:
         print(f"Failed loading secrets: {e}")
     print("Using default env")
+    print(f"Initialized app in {os.get("ENV",None)}")
     return AppSettings()
 
 
