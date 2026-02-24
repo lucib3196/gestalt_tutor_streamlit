@@ -12,11 +12,16 @@ BACKEND_URL = settings.get_backend_url
 def sign_up(data: UserCreate):
     try:
         with httpx.Client() as client:
-            response = client.post(f"{BACKEND_URL}/users/", json=data.model_dump())
-            print("Response" ,response)
+            response = client.post(f"{BACKEND_URL}/users", json=data.model_dump())
+
+        print("Response body", response.json())
+
+        response.raise_for_status()
         return response
     except Exception as e:
-        raise ValueError(f"Failed to make request to backend {e}. Sanity Check {BACKEND_URL}")
+        raise ValueError(
+            f"Failed to make request to backend {e}. Sanity Check {BACKEND_URL}"
+        )
 
 
 def login(email: str, password: str):
