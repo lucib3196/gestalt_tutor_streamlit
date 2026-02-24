@@ -154,7 +154,7 @@ def get_settings() -> AppSettings:
     except Exception as e:
         print(f"Failed loading secrets: {e}")
     print("Using default env")
-    print(f"Initialized app in {os.get("ENV",None)}")
+    print(f"Initialized app in {os.getenv("ENV",None)}")
     return AppSettings()
 
 
