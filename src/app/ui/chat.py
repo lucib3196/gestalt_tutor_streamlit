@@ -1,7 +1,7 @@
 import streamlit as st
-from core.chat_config import ChatOption, CHAT_OPTIONS
-from core.app_settings import ENV
-from services.llm_services import get_new_thread_id, send_message
+from app.core.chat_config import ChatOption, CHAT_OPTIONS
+from app.core.app_settings import ENV
+from app.services.llm_services import get_new_thread_id, send_message
 
 
 def render_chat():

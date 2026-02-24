@@ -1,7 +1,7 @@
 import streamlit as st
-from core.client import client
+from app.core.client import client
 from .async_wrappers import run_async
-from models.sources import SourceRef
+from app.models.sources import SourceRef
 from pathlib import Path
 from typing import Any, Dict
 

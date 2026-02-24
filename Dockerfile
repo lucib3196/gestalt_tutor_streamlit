@@ -13,7 +13,7 @@ FROM python:${PYTHON_VERSION}-slim as backend
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-WORKDIR /app
+WORKDIR /root
 
 
 
@@ -56,7 +56,8 @@ EXPOSE 8501
 
 HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
 
-WORKDIR /app/src
+WORKDIR /root
+
 
 # Run the application.
-ENTRYPOINT ["streamlit", "run", "app/main.py", "--server.port=8501", "--server.address=0.0.0.0"]
+ENTRYPOINT ["python", "-m", "streamlit", "run", "src/app/main.py", "--server.port=8501", "--server.address=0.0.0.0"]

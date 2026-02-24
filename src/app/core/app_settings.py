@@ -1,8 +1,10 @@
 from functools import lru_cache
 from enum import Enum
 from typing import Optional
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator,ConfigDict
 import streamlit as st
+from pydantic_settings import BaseSettings
+
 
 
 class ENV(str, Enum):
@@ -10,7 +12,7 @@ class ENV(str, Enum):
     PRODUCTION = "production"
 
 
-class AppSettings(BaseModel):
+class AppSettings(BaseSettings):
     name: str = Field(
         default="gestalt_tutor",
         description="Application name used for display and logging purposes.",
@@ -68,6 +70,9 @@ class AppSettings(BaseModel):
         default=True,
         description="Flag to control whether source documents are displayed in the UI.",
     )
+    
+    class Config:
+        extra = "ignore"
 
     # Derived properties
     @model_validator(mode="after")
@@ -89,7 +94,7 @@ class AppSettings(BaseModel):
         if self.env == ENV.PRODUCTION and not self.production_url:
             raise ValueError("AGENT ENV set to production but not production url")
         return self
-    
+
     @property
     def get_agent_url(self):
         if self.agent_env == ENV.LOCAL:
@@ -97,7 +102,9 @@ class AppSettings(BaseModel):
         elif self.agent_env == ENV.PRODUCTION:
             return self.agent_production_url
         else:
-            raise ValueError(f"Failed to determined agent url. Unknown mode :{self.agent_env} ")
+            raise ValueError(
+                f"Failed to determined agent url. Unknown mode :{self.agent_env} "
+            )
 
     @property
     def get_backend_url(self):
@@ -106,7 +113,10 @@ class AppSettings(BaseModel):
         elif self.env.value == "production":
             return self.production_url
         else:
-            raise ValueError(f"Failed to determine the backend url: Unknown mode {self.env.value}")
+            raise ValueError(
+                f"Failed to determine the backend url: Unknown mode {self.env.value}"
+            )
+
 
 @lru_cache
 def get_settings() -> AppSettings:
@@ -114,11 +124,31 @@ def get_settings() -> AppSettings:
     Cached settings instance.
     Safe for Streamlit, FastAPI, CLI.
     """
-    raw_settings = dict(**st.secrets)
-    norm_settings = {}
-    for key, value in raw_settings.items():
-        norm_settings[key.lower()] = value
-    return AppSettings(**norm_settings)
+    # Check streamlit secrets first
+    try:
+        print("Trying to load Streamlit secrets")
+
+        raw_settings = {}
+
+        # Only attempt if running inside streamlit context
+        if hasattr(st, "secrets"):
+            raw_settings = dict(st.secrets)
+
+        if raw_settings:
+            print("Using Streamlit secrets")
+
+            norm_settings = {
+                key.lower(): value
+                for key, value in raw_settings.items()
+                if value is not None
+            }
+
+            return AppSettings(**norm_settings)
+
+    except Exception as e:
+        print(f"Failed loading secrets: {e}")
+
+    return AppSettings()
 
 
 if __name__ == "__main__":

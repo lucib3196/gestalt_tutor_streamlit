@@ -3,7 +3,7 @@ from typing import Any, List
 import streamlit as st
 from pydantic import BaseModel
 
-from services.llm_services import initialize_thread_id
+from app.services.llm_services import initialize_thread_id
 
 from . import SourceRef, User
 from .app_settings import get_settings

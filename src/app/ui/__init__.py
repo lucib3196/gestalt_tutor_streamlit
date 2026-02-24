@@ -1,3 +1,3 @@
-from ui.chat import *
-from ui.layout import *
-from ui.sources import source_view
+from app.ui.chat import *
+from app.ui.layout import *
+from app.ui.sources import source_view
