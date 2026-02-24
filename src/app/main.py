@@ -1,15 +1,15 @@
 import streamlit as st
-from core.app_settings import get_settings
-from core.session import init_session
-from ui.layout import render_title
-from ui.chat import (
+from app.core.app_settings import get_settings
+from app.core.session import init_session
+from app.ui.layout import render_title
+from app.ui.chat import (
     render_chat,
     render_chat_input,
     render_select_box,
     render_chatbot_description,
 )
-from ui.sources import source_view
-from ui.login import render_login, render_signup
+from app.ui.sources import source_view
+from app.ui.login import render_login, render_signup
 
 settings = get_settings()
 init_session()

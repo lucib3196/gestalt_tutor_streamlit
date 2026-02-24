@@ -60,4 +60,4 @@ WORKDIR /root
 ENV PYTHONPATH=/root/src
 
 # Run the application.
-ENTRYPOINT ["streamlit", "run", "app/main.py", "--server.port=8501", "--server.address=0.0.0.0"]
+ENTRYPOINT ["python", "-m", "streamlit", "run", "src/app/main.py", "--server.port=8501", "--server.address=0.0.0.0"]

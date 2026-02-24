@@ -1,20 +1,10 @@
 
 ---
 
-# Gestalt Streamlit Template
+# Gestalt Tutor Streamlit Template
 
-A reusable Streamlit project template designed for AI-powered applications.
+A streamlit frontend for tutors focused on mechanical engineering 
 
----
-
-## LangGraph Local Server Integration
-
-This template is designed to work with the LangGraph local development server, allowing you to run and iterate on LangGraph agents alongside the Streamlit UI.
-
-For detailed guidance on developing and running the LangGraph server, refer to the official LangGraph local server documentation:
-[https://docs.langchain.com/oss/python/langgraph/local-server](https://docs.langchain.com/oss/python/langgraph/local-server)
-
----
 
 ## Agent / Chat Configuration
 
@@ -53,7 +43,7 @@ Before installing, ensure the following are installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/lucib3196/gestalt_streamlit_template.git
+git clone [https://github.com/lucib3196/gestalt_streamlit_template.git](https://github.com/lucib3196/gestalt_tutor_streamlit.git)
 cd gestalt_streamlit_template
 ```
 
@@ -122,3 +112,5 @@ streamlit run app/main.py
 ```
 
 The application will open automatically in your browser.
+
+
