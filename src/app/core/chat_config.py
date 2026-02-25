@@ -13,6 +13,7 @@ CHAT_NAMES = Literal[
     "ME135 Transport Tutor",
     "ME118 Engineering Modeling and Analysis Tutor",
     "Sundar Tutor",
+    "Differential Equations Tutor"
 ]
 
 
@@ -38,11 +39,12 @@ CHAT_OPTIONS: Dict[CHAT_NAMES, ChatOption] = {
         ),
         mode=ALLOWED_MODE.TEXT,
     ),
+
     "ME118 Engineering Modeling and Analysis Tutor": ChatOption(
         label="ME118 Engineering Modeling and Analysis Tutor",
         chat_id="agent_me118",
         description=(
-            "An in-depth Engineering Modeling and Analysis tutor grounded in Professor Sundar’s ME118 lecture notes. "
+            "An in-depth Engineering Modeling and Analysis tutor grounded in Professor Sundar’s ME118 lecture notes with additional access to relevant resources from the LibreTexts differential equations textbook. "
             "Provides structured explanations, step-by-step derivations, and analytical problem-solving guidance "
             "for system modeling, differential equations, linear algebra applications, numerical methods, and "
             "engineering interpretation of mathematical models, with references to the original lecture material."
@@ -62,4 +64,18 @@ CHAT_OPTIONS: Dict[CHAT_NAMES, ChatOption] = {
         ),
         mode=ALLOWED_MODE.TEXT,
     ),
+    "Differential Equations Tutor": ChatOption(
+        label="Differential Equations Tutor",
+        chat_id="differential_eq_tutor",
+        active=True,
+        description=(
+            "A Differential Equations tutor focused on clear, step-by-step learning using LibreTexts sources. "
+            "Covers first-order and higher-order ODEs, Laplace transforms, systems of differential equations, "
+            "series solutions, and applications, with guidance aligned to textbook-style explanations and methods."
+        ),
+        mode=ALLOWED_MODE.TEXT,
+    ),
 }
+
+
+
