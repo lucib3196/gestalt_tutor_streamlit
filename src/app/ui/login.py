@@ -4,12 +4,13 @@ from app.services.auth import sign_up, login
 
 
 def render_signup():
-    st.title("Sign Up")
-
-    first_name = st.text_input("first_name")
-    last_name = st.text_input("last_name")
-    email = st.text_input("Email")
-    password = st.text_input("Password", type="password")
+    col1, col2 = st.columns(2)
+    with col1:
+        first_name = st.text_input("First Name", placeholder="John")
+    with col2:
+        last_name = st.text_input("Last Name", placeholder="Doe")
+    email = st.text_input("Email Address", placeholder="john.doe@example.com")
+    password = st.text_input("Password", type="password", placeholder="Enter password")
     data = UserCreate(
         first_name=first_name, last_name=last_name, password=password, email=email
     )
@@ -25,7 +26,6 @@ def render_signup():
 
 
 def render_login():
-    st.title("Login")
     email = st.text_input("Email")
     password = st.text_input("Password", type="password")
 

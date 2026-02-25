@@ -41,10 +41,10 @@ def render_ui():
         env=settings.env,
         thread_id=st.session_state.thread_id,
     )
-    if not st.session_state.id_token:
-        render_auth()
-    else:
-        render_chat_page()
+    # if not st.session_state.id_token:
+    #     render_auth()
+    # else:
+    render_chat_page()
 
 
 render_ui()
