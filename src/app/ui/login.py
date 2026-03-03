@@ -25,7 +25,6 @@ def render_signup():
 
 
 def render_login():
-    st.title("Login")
     email = st.text_input("Email")
     password = st.text_input("Password", type="password")
 
