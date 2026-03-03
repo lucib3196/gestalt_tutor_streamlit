@@ -1,4 +1,5 @@
 import streamlit as st
+import requests
 from app.core.app_settings import get_settings
 from app.core.session import init_session
 from app.ui.layout import render_title
@@ -9,7 +10,8 @@ from app.ui.chat import (
     render_chatbot_description,
 )
 from app.ui.sources import source_view
-from app.ui.login import render_login, render_signup
+from app.ui.login import render_login, render_signup,render_reset_password
+
 # from app.services.auth import get_user_threads
 settings = get_settings()
 init_session()
@@ -34,6 +36,9 @@ def render_auth():
         render_signup()
 
 
+
+
+
 def render_ui():
     # Header Section
     render_title(
@@ -50,6 +55,8 @@ def render_ui():
         # get_user_threads()
     if not st.session_state.id_token:
         render_auth()
+    elif st.session_state.force_password_reset:
+        render_reset_password()
     else:
         render_chat_page()
 

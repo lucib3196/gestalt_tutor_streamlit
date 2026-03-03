@@ -40,6 +40,11 @@ def handle_chatbot_change():
     initialize_thread_id()
 
 
+def handle_new_chat():
+    handle_chatbot_change()
+    st.session_state.messages = []
+
+
 def render_select_box() -> str | None:
     # Renders the labele for the option
     options = [k for k, v in CHAT_OPTIONS.items() if v.active]
@@ -52,5 +57,6 @@ def render_select_box() -> str | None:
         format_func=lambda k: CHAT_OPTIONS[k].label,
         on_change=handle_chatbot_change,
     )
+    st.button(label="New Chat", on_click=handle_new_chat)
 
     return add_radio

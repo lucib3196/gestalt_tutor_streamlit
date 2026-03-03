@@ -23,6 +23,7 @@ class DefaultState(BaseModel):
     show_sources: bool = show_sources
     user: User
     id_token: str | None = None
+    force_password_reset: bool = False
 
 
 DEFAULT_STATE = DefaultState(

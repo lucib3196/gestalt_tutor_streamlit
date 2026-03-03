@@ -32,6 +32,8 @@ def login(email: str, password: str):
         response = requests.post(url, json=payload)
         body = dict(response.json())
 
+        print("login response", body)
+
         if response.status_code != 200:
             error_msg = body.get("error", {}).get("message", "Unknown error")
             st.error(f"Login failed: {error_msg}")
@@ -52,8 +54,18 @@ def login(email: str, password: str):
             fastapi_response = client.post(
                 f"{BACKEND_URL}/users/login", json={"id_token": id_token}
             )
+
         if fastapi_response.status_code == 200:
-            return {"id_token": id_token, "email": email}
+            fastapi_body = fastapi_response.json()
+            force_password_reset = fastapi_body.get("force_password_reset", None)
+            if force_password_reset is None:
+                st.error("Failed to login:")
+                print("Cannot determine password reset state")
+            return {
+                "id_token": id_token,
+                "email": email,
+                "force_password_reset": force_password_reset,
+            }
         else:
             error_msg = response.json().get("detail", "Unknown error")
             st.error(f"Failed to login: {error_msg}")
@@ -61,3 +73,23 @@ def login(email: str, password: str):
     except Exception as e:
         st.error(f"Failed to login: {str(e)}")
         return None
+
+
+def password_reset(new_password: str):
+    id_token = st.session_state.id_token
+    try:
+        with httpx.Client() as client:
+            response = client.post(
+                f"{BACKEND_URL}/users/password_reset/temp",
+                json={"new_password": new_password},
+                headers={"Authorization": f"Bearer {id_token}"},
+            )
+
+
+            body = response.content
+
+        if response.status_code != 200:
+            error_msg = body.get("error", {}).get("message", "Unknown error")
+            raise ValueError(f"Password reset failed: {error_msg}")
+    except Exception as e:
+        raise ValueError(f"Failed to update password {e} ")
