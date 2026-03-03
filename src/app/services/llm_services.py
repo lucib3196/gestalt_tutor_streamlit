@@ -59,25 +59,38 @@ def extract_sources(source_data: Dict[str, Any]) -> None:
     st.session_state.sources = sources
 
 
-async def get_thread_id():
-    return await client.threads.create()
+async def initialize_thread_id_async() -> str | None:
+    try:
+        token = st.session_state.get("id_token")
+        if not token:
+            raise ValueError("No token found")
+
+        async with httpx.AsyncClient() as backend_client:
+            response = await backend_client.post(
+                f"{BACKEND_URL}/users/thread",
+                headers={"Authorization": f"Bearer {token}"},
+                timeout=30,
+            )
+
+            response.raise_for_status()
+            data = response.json()
+            thread_id = data.get("id")
+            if not thread_id:
+                raise ValueError("No thread_id returned from backend")
+            await client.threads.create(thread_id=thread_id)
+            return thread_id
+
+    except Exception as e:
+        print("Failed to initialize thread:", e)
+        return None
 
 
 def initialize_thread_id() -> str:
-    if "thread_id" not in st.session_state:
-        thread = run_async(get_thread_id())
-        st.session_state.thread_id = thread["thread_id"]
-    return st.session_state.thread_id
-
-
-def get_new_thread_id() -> str:
-    thread = run_async(get_thread_id())
-    st.session_state.thread_id = thread["thread_id"]
+    st.session_state.thread_id = run_async(initialize_thread_id_async())
     return st.session_state.thread_id
 
 
 async def stream_langgraph(messages, thread_id: str | None, assistant_id: str):
-    print("this is the messaes", messages)
     async for chunk in client.runs.stream(
         thread_id,
         assistant_id=assistant_id,
@@ -111,13 +124,21 @@ def send_message(prompt: str):
     placeholder = assistant_box.empty()
     tool_placeholder = assistant_box.container()
 
+    if "thread_id" not in st.session_state:
+        print("Initalizing thread id")
+        st.session_state.thread_id = initialize_thread_id()
+
     async def consume():
         buffer = ""
         tool_calls_rendered = set()
-        thread_id = None
+        thread_id = st.session_state.thread_id
 
-        if "thread_id" in st.session_state:
-            thread_id = st.session_state.thread_id
+        async with httpx.AsyncClient() as backend_client:
+            response = await backend_client.post(
+                f"{BACKEND_URL}/threads/{thread_id}/messages",
+                timeout=30,
+                json=user_message,
+            )
 
         async for token in stream_langgraph(
             [user_message],
@@ -141,6 +162,14 @@ def send_message(prompt: str):
                             f"Tool call: `{call['name']}`", expanded=False
                         ):
                             st.json(call["args"])
-            st.session_state.messages.append({"role": "assistant", "content": buffer})
+            ai_message = {"role": "assistant", "content": buffer}
+            async with httpx.AsyncClient() as backend_client:
+                response = await backend_client.post(
+                    f"{BACKEND_URL}/threads/{thread_id}/messages",
+                    timeout=30,
+                    json=ai_message,
+                )
+
+            st.session_state.messages.append(ai_message)
 
     run_async(consume())

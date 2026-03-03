@@ -28,7 +28,7 @@ class DefaultState(BaseModel):
 DEFAULT_STATE = DefaultState(
     messages=[],
     chat_select=None,
-    thread_id=initialize_thread_id(),
+    thread_id=None,
     user=User(),
     id_token=None,
 )

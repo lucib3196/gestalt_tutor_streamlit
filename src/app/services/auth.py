@@ -61,20 +61,3 @@ def login(email: str, password: str):
     except Exception as e:
         st.error(f"Failed to login: {str(e)}")
         return None
-
-
-# def get_user_threads():
-#     try:
-#         token = st.session_state["id_token"]
-#         if not token:
-#             raise ValueError("Failed to get token. Token set to None")
-
-#         with httpx.Client() as client:
-#             response = client.get(
-#                 f"{BACKEND_URL}/users/thread",
-#                 headers={"Authorization": f"Bearer {token}"},
-#             )
-#             print(f"Current user response for threads {response.json()}")
-#     except Exception as e:
-#         print("No User Logged In")
-#         return None

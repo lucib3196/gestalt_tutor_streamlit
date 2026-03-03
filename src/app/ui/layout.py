@@ -1,7 +1,7 @@
 import streamlit as st
-from app.core.chat_config import  ChatOption, CHAT_OPTIONS
+from app.core.chat_config import ChatOption, CHAT_OPTIONS
 from app.core.app_settings import ENV
-from app.services.llm_services import get_new_thread_id
+
 
 def render_title(
     title: str = "My Chat", env: ENV = ENV.LOCAL, thread_id: str | None = None
@@ -13,7 +13,3 @@ def render_title(
 
     st.set_page_config(page_title=title, layout="centered")
     st.title(title)
-
-
-
-

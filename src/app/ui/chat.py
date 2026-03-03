@@ -1,7 +1,7 @@
 import streamlit as st
 from app.core.chat_config import ChatOption, CHAT_OPTIONS
 from app.core.app_settings import ENV
-from app.services.llm_services import get_new_thread_id, send_message
+from app.services.llm_services import initialize_thread_id, send_message
 
 
 def render_chat():
@@ -37,7 +37,7 @@ def handle_chatbot_change():
         return
     chat_data = CHAT_OPTIONS[selected]
     st.session_state.chat_data = chat_data
-    get_new_thread_id()
+    initialize_thread_id()
 
 
 def render_select_box() -> str | None:
