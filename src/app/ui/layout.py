@@ -6,7 +6,7 @@ from app.core.app_settings import ENV
 def render_title(
     title: str = "My Chat", env: ENV = ENV.LOCAL, thread_id: str | None = None
 ):
-    if env == "local":
+    if env.value == "local":
         title += " (Local DEV)"
     if thread_id:
         title += f" {thread_id}"
