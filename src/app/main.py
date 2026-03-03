@@ -10,7 +10,7 @@ from app.ui.chat import (
     render_chatbot_description,
 )
 from app.ui.sources import source_view
-from app.ui.login import render_login, render_signup,render_reset_password
+from app.ui.login import render_login, render_signup, render_reset_password
 
 # from app.services.auth import get_user_threads
 settings = get_settings()
@@ -27,16 +27,13 @@ def render_chat_page():
 
 
 def render_auth():
-    mode = st.radio("Choose", ["Login", "Sign Up"], horizontal=True)
+    mode = st.radio("Choose", ["Login"], horizontal=True)
     st.title(mode)
 
     if mode == "Login":
         render_login()
     else:
         render_signup()
-
-
-
 
 
 def render_ui():

@@ -28,7 +28,6 @@ def render_login():
 
     if st.button("Login"):
         data = login(email, password)
-        print(data)
         if data is None:
             st.error("Failed to login Unexpected Error")
         st.success("Login ok")
