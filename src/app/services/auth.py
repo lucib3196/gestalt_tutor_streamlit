@@ -23,16 +23,14 @@ def sign_up(data: UserCreate):
 
 def login(email: str, password: str):
     # Use google endpoint
-    ## Todo change thsi to the auth 
+    ## Todo change thsi to the auth
     # url = "http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=fake-key"
     url = settings.get_firebase_url
     payload = {"email": email, "password": password, "returnSecureToken": True}
-    
+
     try:
         response = requests.post(url, json=payload)
         body = dict(response.json())
-        
-        print("This is the google response", body)
 
         if response.status_code != 200:
             error_msg = body.get("error", {}).get("message", "Unknown error")
@@ -54,7 +52,6 @@ def login(email: str, password: str):
             fastapi_response = client.post(
                 f"{BACKEND_URL}/users/login", json={"id_token": id_token}
             )
-        print("Login Response", fastapi_response)
         if fastapi_response.status_code == 200:
             return {"id_token": id_token, "email": email}
         else:
@@ -64,3 +61,20 @@ def login(email: str, password: str):
     except Exception as e:
         st.error(f"Failed to login: {str(e)}")
         return None
+
+
+# def get_user_threads():
+#     try:
+#         token = st.session_state["id_token"]
+#         if not token:
+#             raise ValueError("Failed to get token. Token set to None")
+
+#         with httpx.Client() as client:
+#             response = client.get(
+#                 f"{BACKEND_URL}/users/thread",
+#                 headers={"Authorization": f"Bearer {token}"},
+#             )
+#             print(f"Current user response for threads {response.json()}")
+#     except Exception as e:
+#         print("No User Logged In")
+#         return None

@@ -10,7 +10,7 @@ from app.ui.chat import (
 )
 from app.ui.sources import source_view
 from app.ui.login import render_login, render_signup
-
+# from app.services.auth import get_user_threads
 settings = get_settings()
 init_session()
 
@@ -28,10 +28,10 @@ def render_auth():
     mode = st.radio("Choose", ["Login", "Sign Up"], horizontal=True)
     st.title(mode)
 
-    # if mode == "Login":
-    #     render_login()
-    # else:
-    #     render_signup()
+    if mode == "Login":
+        render_login()
+    else:
+        render_signup()
 
 
 def render_ui():
@@ -41,10 +41,17 @@ def render_ui():
         env=settings.env,
         thread_id=st.session_state.thread_id,
     )
-    # if not st.session_state.id_token:
-    #     render_auth()
-    # else:
-    render_chat_page()
+    with st.sidebar:
+        st.markdown("### 👤 Active User")
+        col1, col2 = st.columns([1, 3])
+
+        st.divider()
+        st.markdown("### 🧵 Recent Threads")
+        # get_user_threads()
+    if not st.session_state.id_token:
+        render_auth()
+    else:
+        render_chat_page()
 
 
 render_ui()

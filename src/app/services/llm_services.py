@@ -4,7 +4,11 @@ from .async_wrappers import run_async
 from app.models.sources import SourceRef
 from pathlib import Path
 from typing import Any, Dict
+import httpx
+from app.core.app_settings import get_settings
 
+settings = get_settings()
+BACKEND_URL = settings.get_backend_url
 
 
 def extract_sources(source_data: Dict[str, Any]) -> None:
@@ -54,6 +58,7 @@ def extract_sources(source_data: Dict[str, Any]) -> None:
         return
     st.session_state.sources = sources
 
+
 async def get_thread_id():
     return await client.threads.create()
 
@@ -64,14 +69,15 @@ def initialize_thread_id() -> str:
         st.session_state.thread_id = thread["thread_id"]
     return st.session_state.thread_id
 
-def get_new_thread_id()->str:
+
+def get_new_thread_id() -> str:
     thread = run_async(get_thread_id())
     st.session_state.thread_id = thread["thread_id"]
     return st.session_state.thread_id
 
 
 async def stream_langgraph(messages, thread_id: str | None, assistant_id: str):
-
+    print("this is the messaes", messages)
     async for chunk in client.runs.stream(
         thread_id,
         assistant_id=assistant_id,
@@ -109,6 +115,7 @@ def send_message(prompt: str):
         buffer = ""
         tool_calls_rendered = set()
         thread_id = None
+
         if "thread_id" in st.session_state:
             thread_id = st.session_state.thread_id
 
