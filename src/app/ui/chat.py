@@ -37,12 +37,16 @@ def handle_chatbot_change():
         return
     chat_data = CHAT_OPTIONS[selected]
     st.session_state.chat_data = chat_data
-    initialize_thread_id()
+    try:
+        initialize_thread_id()
+    except Exception as e:
+        st.error(f"{e}")
 
 
 def handle_new_chat():
     handle_chatbot_change()
     st.session_state.messages = []
+    st.session_state.sources = []
 
 
 def render_select_box() -> str | None:
