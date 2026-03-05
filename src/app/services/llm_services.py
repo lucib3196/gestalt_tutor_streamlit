@@ -150,18 +150,18 @@ def send_message(prompt: str):
                 buffer += content
                 placeholder.markdown(buffer)
             tool_calls = token.get("tool_calls")
-            if tool_calls:
+            # if tool_calls:
 
-                for call in tool_calls:
-                    call_id = call.get("id")
-                    if call_id in tool_calls_rendered:
-                        continue
-                    tool_calls_rendered.add(call_id)
-                    with tool_placeholder:
-                        with st.expander(
-                            f"Tool call: `{call['name']}`", expanded=False
-                        ):
-                            st.json(call["args"])
+            #     for call in tool_calls:
+            #         call_id = call.get("id")
+            #         if call_id in tool_calls_rendered:
+            #             continue
+            #         tool_calls_rendered.add(call_id)
+            #         with tool_placeholder:
+            #             with st.expander(
+            #                 f"Tool call: `{call['name']}`", expanded=False
+            #             ):
+            #                 st.json(call["args"])
             ai_message = {"role": "assistant", "content": buffer}
             async with httpx.AsyncClient() as backend_client:
                 response = await backend_client.post(

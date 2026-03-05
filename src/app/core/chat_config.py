@@ -38,6 +38,7 @@ CHAT_OPTIONS: Dict[CHAT_NAMES, ChatOption] = {
             "and mass transfer topics, with references to the original lecture material."
         ),
         mode=ALLOWED_MODE.TEXT,
+        active=False
     ),
 
     "ME118 Engineering Modeling and Analysis Tutor": ChatOption(
