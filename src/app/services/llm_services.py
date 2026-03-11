@@ -11,6 +11,27 @@ settings = get_settings()
 BACKEND_URL = settings.get_backend_url
 
 
+def normalize_content(token: dict) -> str:
+    content = token.get("content")
+
+    if content is None:
+        return ""
+
+    # Case 1: already a string
+    if isinstance(content, str):
+        return content
+
+    # Case 2: list of content blocks
+    if isinstance(content, list):
+        text_parts = []
+        for block in content:
+            if isinstance(block, dict) and block.get("type") == "text":
+                text_parts.append(block.get("text", ""))
+        return "".join(text_parts)
+
+    return ""
+
+
 def extract_sources(source_data: Dict[str, Any]) -> None:
     if not source_data:
         return
@@ -39,7 +60,6 @@ def extract_sources(source_data: Dict[str, Any]) -> None:
 
     sources: list[SourceRef] = []
     try:
-
         source_list = source_data.get("messages", [])
         for doc in source_list[-1].get("artifact", []):
             metadata = doc.get("metadata", {})
@@ -54,6 +74,7 @@ def extract_sources(source_data: Dict[str, Any]) -> None:
                     page=None,
                 )
             )
+
     except Exception as e:
         return
     st.session_state.sources = sources
@@ -101,6 +122,7 @@ async def stream_langgraph(messages, thread_id: str | None, assistant_id: str):
             continue
         model_data = chunk.data.get("model")
         source_data: Dict[str, Any] = chunk.data.get("tools", {})
+        print("This is the source data", source_data)
         extract_sources(source_data)
 
         if not model_data:
@@ -145,7 +167,8 @@ def send_message(prompt: str):
             thread_id,
             st.session_state.chat_data.chat_id,
         ):
-            content = token.get("content")
+            content = normalize_content(token)
+
             if content:
                 buffer += content
                 placeholder.markdown(buffer)
