@@ -1,20 +1,17 @@
 from functools import lru_cache
 from pathlib import Path
-from enum import Enum
-from typing import Optional
+from typing import Literal, Optional
 import os
 import streamlit as st
 
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
-class ENV(str, Enum):
-    LOCAL = "local"
-    PRODUCTION = "production"
+EnvLiteral = Literal["local", "production"]
 
 
 ROOT_DIR = Path(__file__).resolve().parents[3]
+print(ROOT_DIR)
 
 
 class AppSettings(BaseSettings):
@@ -37,8 +34,8 @@ class AppSettings(BaseSettings):
         description="Production LangGraph agent URL. Required when agent_env is PRODUCTION.",
     )
 
-    agent_env: ENV = Field(
-        default=ENV.LOCAL,
+    agent_env: EnvLiteral = Field(
+        default="local",
         description="Environment for the agent server (local or production).",
     )
 
@@ -63,8 +60,8 @@ class AppSettings(BaseSettings):
         examples=["http://localhost:8010"],
     )
 
-    env: ENV = Field(
-        default=ENV.LOCAL,
+    env: EnvLiteral = Field(
+        default="local",
         description="Application runtime environment (local or production).",
     )
     # ------------------------
@@ -86,14 +83,17 @@ class AppSettings(BaseSettings):
         case_sensitive=False,
     )
 
+    # FIREBASE
+    STORAGE_BUCKET: str | None = None
+
     # Derived properties
     @model_validator(mode="after")
     def validate_agent_env(
         self,
     ):
-        if self.agent_env == ENV.LOCAL and not self.agent_local_url:
+        if self.agent_env == "local" and not self.agent_local_url:
             raise ValueError("AGENT ENV  set to local but url is not set")
-        if self.agent_env == ENV.PRODUCTION and not self.agent_production_url:
+        if self.agent_env == "production" and not self.agent_production_url:
             raise ValueError("AGENT ENV set to production but not production url")
         return self
 
@@ -101,17 +101,17 @@ class AppSettings(BaseSettings):
     def validate_backend_env(
         self,
     ):
-        if self.env == ENV.LOCAL and not self.local_url:
-            raise ValueError("AGENT ENV  set to local but url is not set")
-        if self.env == ENV.PRODUCTION and not self.production_url:
-            raise ValueError("AGENT ENV set to production but not production url")
+        if self.env == "local" and not self.local_url:
+            raise ValueError("ENV  set to local but url is not set")
+        if self.env == "production" and not self.production_url:
+            raise ValueError("ENV set to production but not production url")
         return self
 
     @property
     def get_agent_url(self):
-        if self.agent_env == ENV.LOCAL:
+        if self.agent_env == "local":
             return self.agent_local_url
-        elif self.agent_env == ENV.PRODUCTION:
+        elif self.agent_env == "production":
             return self.agent_production_url
         else:
             raise ValueError(
@@ -120,21 +120,22 @@ class AppSettings(BaseSettings):
 
     @property
     def get_backend_url(self):
-        if self.env.value == "local":
+        if self.env == "local":
             return self.local_url
-        elif self.env.value == "production":
+        elif self.env == "production":
             return self.production_url
         else:
             raise ValueError(
-                f"Failed to determine the backend url: Unknown mode {self.env.value}"
+                f"Failed to determine the backend url: Unknown mode {self.env}"
             )
 
     @property
-    def get_firebase_url(self)->str:
-        if self.env.value == "local":
+    def get_firebase_url(self) -> str:
+        print("Env value", self.env)
+        if self.env == "local":
             # Firebase host emulator
             return "http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=fake-key"
-        elif self.env.value == "production":
+        elif self.env == "production":
             if not self.firebase_api_key:
                 raise ValueError(
                     "Failed to define firebase url firebase api key is None. Must be set in ENV"
@@ -143,6 +144,7 @@ class AppSettings(BaseSettings):
             return url
         else:
             raise ValueError("Cannot determine firebase url")
+
 
 @lru_cache
 def get_settings() -> AppSettings:
@@ -173,10 +175,11 @@ def get_settings() -> AppSettings:
 
     except Exception as e:
         print(f"Failed loading secrets: {e}")
-    print("Using default env")
-    print(f"Initialized app in {os.getenv("ENV",None)}")
+
     return AppSettings()
 
 
 if __name__ == "__main__":
-    print("Settings: ", get_settings())
+    settings = get_settings()
+    print("Settings: ", settings)
+    print(settings.get_firebase_url)

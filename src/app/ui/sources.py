@@ -5,13 +5,15 @@ import streamlit as st
 from models.sources import SourceRef
 from typing import List
 import requests
-from urllib.parse import urlparse
+from urllib.parse import urlparse, quote
+from app.core.app_settings import get_settings
 
 
+settings = get_settings()
 PKG_ROOT = Path(__file__).resolve().parents[1]
 
 
-def normalize_source(source: str) -> str:
+def normalize_source(bucket: str, source: str) -> str:
     source = source.replace("\\", "/")
 
     # Fix malformed http:/ -> http://
@@ -21,6 +23,21 @@ def normalize_source(source: str) -> str:
     if source.startswith("https:/") and not source.startswith("https://"):
         source = source.replace("https:/", "https://", 1)
 
+    # Already a valid firebase download URL
+    if "firebasestorage.googleapis.com" in source:
+        return source
+
+    # Convert storage.googleapis URL -> firebase download URL
+    if "storage.googleapis.com" in source:
+        path = source.split(".app/")[-1]
+        encoded = quote(path, safe="")
+        return f"https://firebasestorage.googleapis.com/v0/b/{bucket}/o/{encoded}?alt=media"
+
+    # If it's a raw storage path
+    if not source.startswith("http"):
+        encoded = quote(source, safe="")
+        return f"https://firebasestorage.googleapis.com/v0/b/{bucket}/o/{encoded}?alt=media"
+
     return source
 
 
@@ -29,7 +46,7 @@ def open_pdf(source: str | bytes) -> fitz.Document:
         return fitz.open(stream=source, filetype="pdf")
     parsed = urlparse(source)
     if parsed.scheme in ("http", "https"):
-        source = normalize_source(source)
+        source = normalize_source(bucket=settings.STORAGE_BUCKET, source =source) # type: ignore
         response = requests.get(source)
         response.raise_for_status()
         return fitz.open(stream=response.content, filetype="pdf")

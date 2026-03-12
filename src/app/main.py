@@ -29,7 +29,6 @@ def render_chat_page():
 def render_auth():
     mode = st.radio("Choose", ["Login"], horizontal=True)
     st.title(mode)
-
     if mode == "Login":
         render_login()
     else:

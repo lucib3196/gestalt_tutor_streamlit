@@ -1,6 +1,5 @@
 import streamlit as st
 from app.core.chat_config import ChatOption, CHAT_OPTIONS
-from app.core.app_settings import ENV
 from app.services.llm_services import initialize_thread_id, send_message
 
 
