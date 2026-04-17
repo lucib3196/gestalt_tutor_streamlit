@@ -14,6 +14,7 @@ from app.ui.login import render_login, render_signup, render_reset_password
 
 # from app.services.auth import get_user_threads
 settings = get_settings()
+
 init_session()
 
 
@@ -35,10 +36,14 @@ def render_auth():
         render_signup()
 
 
+
 def render_ui():
     # Header Section
+    app_title = (
+        f"{settings.name} {settings.env if settings.env != 'production' else None}"
+    )
     render_title(
-        title=settings.name,
+        title=app_title,
         env=settings.env,
         thread_id=st.session_state.thread_id,
     )
@@ -49,12 +54,16 @@ def render_ui():
         st.divider()
         st.markdown("### 🧵 Recent Threads")
         # get_user_threads()
-    if not st.session_state.id_token:
-        render_auth()
-    elif st.session_state.force_password_reset:
-        render_reset_password()
-    else:
+
+    if settings.env == "demo":
         render_chat_page()
+    else:
+        if not st.session_state.id_token:
+            render_auth()
+        elif st.session_state.force_password_reset:
+            render_reset_password()
+        else:
+            render_chat_page()
 
 
 render_ui()

@@ -8,12 +8,12 @@ class ALLOWED_MODE(str, Enum):
     FILE = "file"
     BOTH = "both"
 
-
 CHAT_NAMES = Literal[
     "ME135 Transport Tutor",
     "ME118 Engineering Modeling and Analysis Tutor",
     "Sundar Tutor",
-    "Differential Equations Tutor"
+    "Differential Equations Tutor",
+    "stem_textbook_retrieval"
 ]
 
 
@@ -38,9 +38,8 @@ CHAT_OPTIONS: Dict[CHAT_NAMES, ChatOption] = {
             "and mass transfer topics, with references to the original lecture material."
         ),
         mode=ALLOWED_MODE.TEXT,
-        active=False
+        active=True,
     ),
-
     "ME118 Engineering Modeling and Analysis Tutor": ChatOption(
         label="ME118 Engineering Modeling and Analysis Tutor",
         chat_id="agent_me118",
@@ -76,7 +75,15 @@ CHAT_OPTIONS: Dict[CHAT_NAMES, ChatOption] = {
         ),
         mode=ALLOWED_MODE.TEXT,
     ),
+    "stem_textbook_retrieval": ChatOption(
+        label="STEM Textbook Retrieval",
+        chat_id="stem_textbook_retrieval",
+        description=(
+            "A STEM textbook retrieval chat with a collection of open-source textbooks in calculus, "
+            "differential equations, fluid mechanics, and physics. The agent attempts to answer "
+            "questions based on these parsed textbooks."
+        ),
+        active=True,
+        mode=ALLOWED_MODE.TEXT,
+    ),
 }
-
-
-

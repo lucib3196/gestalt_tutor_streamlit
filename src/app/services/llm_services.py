@@ -135,7 +135,6 @@ async def stream_langgraph(messages, thread_id: str | None, assistant_id: str):
         if last_msg:
             yield last_msg
 
-
 def send_message(prompt: str):
     if not prompt:
         return
@@ -154,13 +153,15 @@ def send_message(prompt: str):
         buffer = ""
         tool_calls_rendered = set()
         thread_id = st.session_state.thread_id
+        is_demo_mode = settings.env == "demo"
 
-        async with httpx.AsyncClient() as backend_client:
-            response = await backend_client.post(
-                f"{BACKEND_URL}/threads/{thread_id}/messages",
-                timeout=30,
-                json=user_message,
-            )
+        if not is_demo_mode:
+            async with httpx.AsyncClient() as backend_client:
+                await backend_client.post(
+                    f"{BACKEND_URL}/threads/{thread_id}/messages",
+                    timeout=30,
+                    json=user_message,
+                )
 
         async for token in stream_langgraph(
             [user_message],
@@ -173,26 +174,26 @@ def send_message(prompt: str):
                 buffer += content
                 placeholder.markdown(buffer)
             tool_calls = token.get("tool_calls")
-            # if tool_calls:
-
-            #     for call in tool_calls:
-            #         call_id = call.get("id")
-            #         if call_id in tool_calls_rendered:
-            #             continue
-            #         tool_calls_rendered.add(call_id)
-            #         with tool_placeholder:
-            #             with st.expander(
-            #                 f"Tool call: `{call['name']}`", expanded=False
-            #             ):
-            #                 st.json(call["args"])
-            ai_message = {"role": "assistant", "content": buffer}
+            if is_demo_mode and tool_calls:
+                for call in tool_calls:
+                    call_id = call.get("id")
+                    if call_id in tool_calls_rendered:
+                        continue
+                    tool_calls_rendered.add(call_id)
+                    with tool_placeholder:
+                        with st.expander(
+                            f"Tool call: `{call['name']}`", expanded=False
+                        ):
+                            st.json(call["args"])
+        ai_message = {"role": "assistant", "content": buffer}
+        if not is_demo_mode:
             async with httpx.AsyncClient() as backend_client:
-                response = await backend_client.post(
+                await backend_client.post(
                     f"{BACKEND_URL}/threads/{thread_id}/messages",
                     timeout=30,
                     json=ai_message,
                 )
 
-            st.session_state.messages.append(ai_message)
+        st.session_state.messages.append(ai_message)
 
     run_async(consume())

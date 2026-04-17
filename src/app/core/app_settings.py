@@ -1,13 +1,12 @@
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal, Optional
-import os
 import streamlit as st
 
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-EnvLiteral = Literal["local", "production"]
+EnvLiteral = Literal["local", "production", "demo"]
 
 
 ROOT_DIR = Path(__file__).resolve().parents[3]
@@ -15,8 +14,14 @@ print(ROOT_DIR)
 
 
 class AppSettings(BaseSettings):
+
+    env: EnvLiteral = Field(
+        default="local",
+        description="Application runtime environment (local or production).",
+    )
     name: str = Field(
         default="gestalt_tutor",
+        alias="APP_NAME",
         description="Application name used for display and logging purposes.",
     )
 
@@ -60,10 +65,6 @@ class AppSettings(BaseSettings):
         examples=["http://localhost:8010"],
     )
 
-    env: EnvLiteral = Field(
-        default="local",
-        description="Application runtime environment (local or production).",
-    )
     # ------------------------
     # FIREBASE API Configuration
     # ------------------------
@@ -91,6 +92,8 @@ class AppSettings(BaseSettings):
     def validate_agent_env(
         self,
     ):
+        if self.agent_env == "demo":
+            return self
         if self.agent_env == "local" and not self.agent_local_url:
             raise ValueError("AGENT ENV  set to local but url is not set")
         if self.agent_env == "production" and not self.agent_production_url:
@@ -101,6 +104,8 @@ class AppSettings(BaseSettings):
     def validate_backend_env(
         self,
     ):
+        if self.env == "demo":
+            return self
         if self.env == "local" and not self.local_url:
             raise ValueError("ENV  set to local but url is not set")
         if self.env == "production" and not self.production_url:
@@ -111,6 +116,8 @@ class AppSettings(BaseSettings):
     def get_agent_url(self):
         if self.agent_env == "local":
             return self.agent_local_url
+        elif self.agent_env == "demo":
+            return self.agent_local_url or self.agent_production_url
         elif self.agent_env == "production":
             return self.agent_production_url
         else:
@@ -122,6 +129,8 @@ class AppSettings(BaseSettings):
     def get_backend_url(self):
         if self.env == "local":
             return self.local_url
+        elif self.env == "demo":
+            return self.local_url or self.production_url
         elif self.env == "production":
             return self.production_url
         else:
@@ -131,7 +140,6 @@ class AppSettings(BaseSettings):
 
     @property
     def get_firebase_url(self) -> str:
-        print("Env value", self.env)
         if self.env == "local":
             # Firebase host emulator
             return "http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=fake-key"
@@ -142,6 +150,8 @@ class AppSettings(BaseSettings):
                 )
             url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={self.firebase_api_key}"
             return url
+        elif self.env == "demo":
+            return ""
         else:
             raise ValueError("Cannot determine firebase url")
 
