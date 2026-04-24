@@ -13,7 +13,8 @@ CHAT_NAMES = Literal[
     "ME118 Engineering Modeling and Analysis Tutor",
     "Sundar Tutor",
     "Differential Equations Tutor",
-    "stem_textbook_retrieval"
+    "stem_textbook_retrieval",
+    "me116_agent",
 ]
 
 
@@ -82,6 +83,17 @@ CHAT_OPTIONS: Dict[CHAT_NAMES, ChatOption] = {
             "A STEM textbook retrieval chat with a collection of open-source textbooks in calculus, "
             "differential equations, fluid mechanics, and physics. The agent attempts to answer "
             "questions based on these parsed textbooks."
+        ),
+        active=True,
+        mode=ALLOWED_MODE.TEXT,
+    ),
+    "me116_agent": ChatOption(
+        label="ME116 Heat Transfer Tutor",
+        chat_id="agent_me116",
+        description=(
+            "A heat transfer tutor focused on helping students understand conduction, convection, "
+            "radiation, and related thermal analysis topics through clear explanations and structured "
+            "problem-solving support."
         ),
         active=True,
         mode=ALLOWED_MODE.TEXT,
